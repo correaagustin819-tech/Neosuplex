@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Proveedor - NeoSuplex</title>
+    <link rel="stylesheet" href="style.css"> <!-- Aprovechamos tu CSS existente -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para el panel de control */
+        .admin-container { max-width: 1000px; margin: 40px auto; padding: 20px; color: white; font-family: sans-serif; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .admin-form { background: #111; padding: 25px; border-radius: 8px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border: 1px solid #333; }
+        .admin-form input, .admin-form select, .admin-form textarea { padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; width: 100%; box-sizing: border-box; }
+        .full-width { grid-column: 1 / -1; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #111; border-radius: 8px; overflow: hidden; }
+        .admin-table th, .admin-table td { border-bottom: 1px solid #333; padding: 15px; text-align: left; }
+        .admin-table th { background: #00d26a; color: black; font-weight: bold; }
+        .btn-success { background: #00d26a; color: black; padding: 12px 20px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .btn-success:hover { background: #00e676; }
+        .btn-edit { background: #ffb800; color: black; padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; margin-right: 5px; }
+        .btn-danger { background: #ff4444; color: white; padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body style="background-color: #000;">
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2><i class="fas fa-boxes"></i> Gestión de Inventario (Proveedor)</h2>
+            <a href="index.html" style="color: #00d26a; text-decoration: none;"><i class="fas fa-arrow-left"></i> Volver a la Tienda</a>
+        </div>
+        
+        <!-- Formulario para Agregar/Editar -->
+        <form id="form-producto" class="admin-form">
+            <input type="hidden" id="prod-id"> <!-- Campo invisible para saber si estamos editando -->
+            
+            <div>
+                <label style="font-size: 12px; color: #888;">Nombre del Producto</label>
+                <input type="text" id="prod-nombre" placeholder="Ej: Proteína Whey 1kg" required>
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #888;">Precio (Sin símbolos)</label>
+                <input type="number" id="prod-precio" placeholder="Ej: 165000" required>
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #888;">Categoría</label>
+                <select id="prod-categoria" required>
+                    <option value="">Seleccionar Categoría...</option>
+                    <option value="Proteínas">Proteínas</option>
+                    <option value="Aminoácidos">Aminoácidos</option>
+                    <option value="Creatina">Creatina</option>
+                    <option value="Pre-entreno">Pre-entrenos</option>
+                    <option value="Vitaminas">Vitaminas</option>
+                    <option value="Grasas Saludables">Grasas Saludables</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #888;">Stock Disponible</label>
+                <input type="number" id="prod-stock" placeholder="Ej: 15" required>
+            </div>
+            
+            <div class="full-width">
+                <label style="font-size: 12px; color: #888;">Ruta de la Imagen</label>
+                <input type="text" id="prod-imagen" placeholder="Ej: imagenes/nueva-proteina.png" required>
+            </div>
+            
+            <div class="full-width">
+                <label style="font-size: 12px; color: #888;">Descripción Detallada</label>
+                <textarea id="prod-descripcion" placeholder="Escribe aquí los detalles del suplemento..." rows="3"></textarea>
+            </div>
+            
+            <div class="full-width" style="display: flex; gap: 10px;">
+                <button type="submit" class="btn-success" id="btn-guardar"><i class="fas fa-save"></i> Guardar Producto</button>
+                <button type="button" id="btn-cancelar" style="display:none; padding: 12px 20px; background: #444; color: white; border:none; border-radius: 5px; cursor:pointer;">Cancelar Edición</button>
+            </div>
+        </form>
+
+        <!-- Tabla de Productos Actuales -->
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-productos">
+                <!-- Se llenará automáticamente con JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Conectamos con el nuevo script exclusivo de administrador -->
+    <script src="admin.js"></script>
+</body>
+</html>

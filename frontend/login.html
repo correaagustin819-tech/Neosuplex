@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Neosuplex</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        .login-box h2 { margin-bottom: 20px; color: var(--color-text-light); }
+        .login-box .form-group { text-align: left; }
+        .login-box label { display: block; margin-bottom: 8px; color: var(--color-text-dull); font-size: 13px; }
+        .login-box input { width: 100%; padding: 12px; background: var(--color-bg-input); border: 1px solid var(--color-border); color: white; border-radius: 6px; margin-bottom: 20px; font-family: 'Poppins', sans-serif;}
+        .login-box input:focus { border-color: var(--color-primary); outline: none; }
+        .login-link { color: var(--color-primary); font-size: 14px; display: block; margin-top: 20px; text-decoration: none; cursor: pointer; }
+        
+        /* Estilos de las pestañas internas */
+        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid var(--color-border); }
+        .auth-tab { flex: 1; padding: 10px; background: none; border: none; color: var(--color-text-dull); font-weight: bold; cursor: pointer; font-size: 15px; font-family: 'Poppins', sans-serif; transition: 0.3s; }
+        .auth-tab.active { color: var(--color-primary); border-bottom: 2px solid var(--color-primary); }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="imagenes/Logo1.0.png" alt="Neosuplex Logo">
+            </a>
+            <nav class="nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="carrito.html" class="cart-icon" style="color: var(--color-primary);">
+                    <i class="fas fa-shopping-cart"></i><span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="login-section">
+        <div class="login-box">
+            
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active" onclick="cambiarPestaña('login')">Ingresar</button>
+                <button id="tab-registro" class="auth-tab" onclick="cambiarPestaña('registro')">Registrarse</button>
+            </div>
+
+            <form id="form-login" onsubmit="ejecutarLogin(event)">
+                <h2>Bienvenido a Neosuplex</h2>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="email-login" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="pass-login" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-blue btn-full mt-3">Iniciar Sesión</button>
+                <a onclick="cambiarPestaña('registro')" class="login-link">¿No tienes cuenta? Regístrate aquí</a>
+            </form>
+
+            <form id="form-registro" onsubmit="ejecutarRegistro(event)" style="display: none;">
+                <h2>Crea tu Cuenta</h2>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="nombre-registro" placeholder="Juan Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="email-registro" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="pass-registro" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-blue btn-full mt-3" style="background-color: #ffb800; color: black;">Crear Cuenta</button>
+                <a onclick="cambiarPestaña('login')" class="login-link">¿Ya tienes cuenta? Inicia sesión acá</a>
+            </form>
+
+        </div>
+    </section>
+
+    <script>
+        const API_AUTH_URL = 'http://localhost:8080/api/auth';
+
+        // Cambiar visualmente entre Login y Registro sin cambiar de archivo
+        function cambiarPestaña(modo) {
+            const formLogin = document.getElementById('form-login');
+            const formRegistro = document.getElementById('form-registro');
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegistro = document.getElementById('tab-registro');
+
+            if (modo === 'login') {
+                formLogin.style.display = 'block';
+                formRegistro.style.display = 'none';
+                tabLogin.classList.add('active');
+                tabRegistro.classList.remove('active');
+            } else {
+                formLogin.style.display = 'none';
+                formRegistro.style.display = 'block';
+                tabLogin.classList.remove('active');
+                tabRegistro.classList.add('active');
+            }
+        }
+
+        // CONTROLADOR DE REGISTRO (Manda datos a Java y encripta en BD)
+async function ejecutarRegistro(evento) {
+    evento.preventDefault();
+
+    const usuarioData = {
+        nombre: document.getElementById('nombre-registro').value,
+        email: document.getElementById('email-registro').value,
+        password: document.getElementById('pass-registro').value,
+        rol: 'CLIENTE'
+    };
+
+    try {
+        const respuesta = await fetch(`${API_AUTH_URL}/registrar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuarioData)
+        });
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert("¡Registro exitoso! Ya puedes iniciar sesión con tus datos.");
+            document.getElementById('form-registro').reset();
+            cambiarPestaña('login');
+        } else {
+            alert(resultado.mensaje || "Error al registrarse.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Hubo un problema al conectar con el servidor.");
+    }
+}
+
+// 2. CORRECCIÓN DE LOGIN
+async function ejecutarLogin(evento) {
+    evento.preventDefault();
+
+    const credenciales = {
+        email: document.getElementById('email-login').value, 
+        password: document.getElementById('pass-login').value 
+    };
+
+    try {
+        const respuesta = await fetch(`${API_AUTH_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credenciales)
+        });
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert(`¡Bienvenido, ${resultado.nombre}!`);
+            localStorage.setItem('usuarioLogueado', JSON.stringify(resultado));
+
+            if (resultado.rol === 'PROVEEDOR' || resultado.rol === 'ADMIN') {
+                localStorage.setItem('esProveedor', 'true');
+                window.location.href = "proveedor.html"; 
+            } else {
+                localStorage.removeItem('esProveedor');
+                window.location.href = "index.html"; 
+            }
+        } else {
+            alert(resultado.mensaje || "Correo o contraseña incorrectos.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error de conexión con el servidor.");
+    }
+}
+    </script>
+
+    <script src="main.js"></script>
+</body>
+</html>
